@@ -52,6 +52,14 @@ public class BlockController : MonoBehaviour {
 			Vector3 pos = movingBlock.transform.position;
 			pos.x += 0.4f;
 			movingBlock.transform.position = pos;
+		} else if (Input.GetKeyDown (KeyCode.Space)) {
+			Vector3 oriEuler = movingBlock.transform.eulerAngles;
+			oriEuler.z -= 90;
+			if (oriEuler.z < 0)
+				oriEuler.z += 360;
+			movingBlock.transform.rotation = Quaternion.Euler (oriEuler);
+			
+
 		}else {
 			Debug.Log ("ELSE");
 		}
