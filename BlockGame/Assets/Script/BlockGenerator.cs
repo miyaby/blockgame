@@ -28,7 +28,7 @@ public class BlockGenerator : MonoBehaviour {
 		blocks.Add (tBlockPrefab);
 		blocks.Add (zBlockPrefab);
 
-		BlockGenerator.generateBlock ();
+		generateBlock ();
 
 //		blocks = new GameObject[iBlockPrefab,jBlockPrefab,lBlockPrefab,oBlockPrefab,sBlockPrefab,tBlockPrefab,zBlockPrefab];
 	}
@@ -44,5 +44,7 @@ public class BlockGenerator : MonoBehaviour {
 		int rand = Random.Range (1,7);
 		GameObject block = Instantiate (blocks [rand], new Vector3 (0, 4.57f, 0), Quaternion.Euler (0, 0, 0));
 		block.name = "MovingBlock";
+
+		BlockController.movingBlockPos = 195;
 	}
 }
