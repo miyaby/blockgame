@@ -1,0 +1,26 @@
+fileFormatVersion: 2
+guid: ee14211fcca1c47f98137ddbcc9f161e
+timeCreated: 1503562890
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - iBlockPrefab: {fileID: 1447478905297740, guid: 8070ab585f0b146da92496c0581e1bfe,
+      type: 2}
+  - jBlockPrefab: {fileID: 1656499509928340, guid: 7ca2adf4b87984fe28327d9014605557,
+      type: 2}
+  - lBlockPrefab: {fileID: 1662663371655334, guid: 86154224556234ff5860513ed45be46e,
+      type: 2}
+  - oBlockPrefab: {fileID: 1393580156423498, guid: 772bf10a707454314adcec8768cf18de,
+      type: 2}
+  - sBlockPrefab: {fileID: 1006650179295332, guid: a970f7a07431f4db390fe84c19fdf128,
+      type: 2}
+  - tBlockPrefab: {fileID: 1248770928476452, guid: f66c4b6a9cef84ba5a018b03450d5b85,
+      type: 2}
+  - zBlockPrefab: {fileID: 1797365247144738, guid: 8c576bef9031c4b1890c5a8767a8d07c,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
