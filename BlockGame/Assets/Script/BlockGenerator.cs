@@ -41,10 +41,11 @@ public class BlockGenerator : MonoBehaviour {
 	static public void generateBlock(){
 
 		//ランダムに7種類のブロックを生成
-		int rand = Random.Range (1,7);
+		int rand = Random.Range (0,6);
 		GameObject block = Instantiate (blocks [rand], new Vector3 (0, 4.57f, 0), Quaternion.Euler (0, 0, 0));
 		block.name = "MovingBlock";
 
 		BlockController.movingBlockPos = 195;
+		BlockController.movingBlocksPos = BlockController.allBlocksPos [rand];
 	}
 }
