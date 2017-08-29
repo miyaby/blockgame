@@ -46,6 +46,6 @@ public class BlockGenerator : MonoBehaviour {
 		block.name = "MovingBlock";
 
 		BlockController.movingBlockPos = 195;
-		BlockController.movingBlocksPos = BlockController.allBlocksPos [rand];
+		BlockController.allBlocksPos [rand].CopyTo (BlockController.movingBlocksPos,0);
 	}
 }
