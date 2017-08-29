@@ -20,7 +20,7 @@ public class BlockController : MonoBehaviour {
 
 	//中心ブロックの座標を０とした時の４ブロックのポジション
 	public static int[] movingBlocksPos = new int[] { 0, 0, 0, 0 };
-	static int[] iBlocksPos = new int[] { 0, 1, 2, 3 };
+	static int[] iBlocksPos = new int[] { 0, -1, 1, 2 };
 	static int[] jBlocksPos = new int[] { 0, 1, 2, 10 };
 	static int[] lBlocksPos = new int[] { 0, -10, 1, 2 };
 	static int[] oBlocksPos = new int[] { 0, -10, -9, 1 };
@@ -45,7 +45,8 @@ public class BlockController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		DownKeyCheck ();
+		if (DownKeyCheck ())
+			return;
 
 		timeElapsed += Time.deltaTime;
 
@@ -53,44 +54,43 @@ public class BlockController : MonoBehaviour {
 
 			GameObject movingBlock = GameObject.Find ("MovingBlock");
 
-//			Debug.Log (blockExistArray[movingBlockPos-10]);
-
-			//移動中ブロックのうち一番低いブロックの座標
-			int underBolckPos = movingBlockPos + movingBlocksPos.Min ();
-			//-10すると他のブロックにぶつかる?
 			bool conflictBlock = false;
 			foreach (int blockPos in movingBlocksPos) {
+				//-10すると他のブロックにぶつかる?
 				if (movingBlockPos + blockPos >= 10 && movingBlockPos + blockPos < 200 && !conflictBlock)
 					conflictBlock = blockExistArray [movingBlockPos + blockPos - 10];
+				//最下段に達した?
 				if (movingBlockPos + blockPos < 10)
 					conflictBlock = true;
 			}
 
-//			//移動中ブロックのうち一番低いブロックの座標
-//			int underBolckPos = movingBlockPos + +movingBlocksPos.Min ();
-//			//-10すると他のブロックにぶつかる?
-//			bool conflictBlock = false;
-//			if (underBolckPos >= 10)
-//				conflictBlock = blockExistArray [underBolckPos - 10];
-
-			//underBolckPos(=最下段)に着いたらストップ
+			//他のブロックにぶつかる・最下段に達したらストップ
 			if (conflictBlock) {
-				if(movingBlock)
+				if (movingBlock)
 					movingBlock.name = "StopBlock";
 
-				Debug.Log ("FIX.BLOCKS = "+movingBlocksPos[0]+"/"+movingBlocksPos[1]+"/"+movingBlocksPos[2]+"/"+movingBlocksPos[3]);
+				Debug.Log ("FIX.BLOCKS = " + movingBlocksPos [0] + "/" + movingBlocksPos [1] + "/" + movingBlocksPos [2] + "/" + movingBlocksPos [3]);
 
 				//ブロックがある箇所のbool値をtrueに
 				blockExistArray [movingBlockPos] = true;
-				blockExistArray [movingBlockPos + movingBlocksPos[1]] = true;
-				blockExistArray [movingBlockPos + movingBlocksPos[2]] = true;
-				blockExistArray [movingBlockPos + movingBlocksPos[3]] = true;
+				blockExistArray [movingBlockPos + movingBlocksPos [1]] = true;
+				blockExistArray [movingBlockPos + movingBlocksPos [2]] = true;
+				blockExistArray [movingBlockPos + movingBlocksPos [3]] = true;
 
 				BlockGenerator.generateBlock ();
-				return;
-			}
-				
-			if (movingBlock) {
+
+				//ログ
+				string exitsBlock = "";
+				for (int i = 0; i < 200; i++) {
+					if (blockExistArray [i]) {
+						exitsBlock = exitsBlock + i.ToString ();
+						exitsBlock = exitsBlock + ",";
+					}
+				}
+//				Debug.Log ("FIX.BLOCKS = "+movingBlocksPos[0]+"/"+movingBlocksPos[1]+"/"+movingBlocksPos[2]+"/"+movingBlocksPos[3]);
+				Debug.Log ("FIX.BLOCKS = " + exitsBlock);
+
+			} else {
 				Vector3 pos = movingBlock.transform.position;
 				pos.y -= 0.4f;
 				movingBlock.transform.position = pos;
@@ -104,7 +104,7 @@ public class BlockController : MonoBehaviour {
 	}
 
 	//押されているキーを取得
-	void DownKeyCheck(){
+	bool DownKeyCheck(){
 
 		GameObject movingBlock = GameObject.Find ("MovingBlock");
 		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
@@ -139,8 +139,10 @@ public class BlockController : MonoBehaviour {
 			}
 			Debug.Log ("BLOCKS = "+movingBlocksPos[0]+"/"+movingBlocksPos[1]+"/"+movingBlocksPos[2]+"/"+movingBlocksPos[3]);
 		}else {
-//			Debug.Log ("ELSE");
+			return false;
 		}
+
+		return true;
 	}
 
 	//回転時のブロック座標修正メソッド
@@ -153,8 +155,6 @@ public class BlockController : MonoBehaviour {
 			return -10;
 		case 2:
 			return -20;
-		case 3:
-			return -30;
 		case 9:
 			return 11;
 		case 10:
@@ -163,14 +163,10 @@ public class BlockController : MonoBehaviour {
 			return -9;
 		case 20:
 			return 2;
-		case 30:
-			return 3;
 		case -1:
 			return 10;
 		case -2:
 			return 20;
-		case -3:
-			return 30;
 		case -9:
 			return -11;
 		case -10:
@@ -179,8 +175,6 @@ public class BlockController : MonoBehaviour {
 			return 9;
 		case -20:
 			return -2;
-		case -30:
-			return -3;
 		default:
 			return 0;
 		}
