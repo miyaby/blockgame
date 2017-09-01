@@ -106,10 +106,15 @@ public class BlockController : MonoBehaviour {
 	//押されているキーを取得
 	bool DownKeyCheck(){
 
+		bool move = true;
 		GameObject movingBlock = GameObject.Find ("MovingBlock");
 		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
 			//一番左の列でない
-			if (movingBlockPos % 10 != 0) {
+			foreach (int blockPos in movingBlocksPos) {
+				if ((movingBlockPos + blockPos) % 10 == 0)
+					move = false;
+			}
+			if (move) {
 				Vector3 pos = movingBlock.transform.position;
 				pos.x -= 0.4f;
 				movingBlock.transform.position = pos;
@@ -119,7 +124,11 @@ public class BlockController : MonoBehaviour {
 			}
 		} else if (Input.GetKeyDown (KeyCode.RightArrow)) {
 			//一番右の列でない
-			if (movingBlockPos % 10 != 9) {
+			foreach (int blockPos in movingBlocksPos) {
+				if ((movingBlockPos + blockPos) % 10 == 9)
+					move = false;
+			}
+			if (move) {
 				Vector3 pos = movingBlock.transform.position;
 				pos.x += 0.4f;
 				movingBlock.transform.position = pos;
@@ -137,6 +146,57 @@ public class BlockController : MonoBehaviour {
 			for (int it = 0; it < 4; it++) {
 				movingBlocksPos[it] = applySpin (movingBlocksPos[it]);
 			}
+
+			//回転の結果、ブロックが画面外に出てしまっていたら、位置を調整する
+			//動いているブロックのX座標
+			int movingX = movingBlockPos % 10;
+			int adjustX = 0;//調整値
+			switch (movingX) {
+			case 9://一番右
+				foreach (int blockPos in movingBlocksPos) {
+					if (blockPos == 2) {
+						adjustX = -2;
+					}else if (blockPos == -9 || blockPos == 1 || blockPos == 11) {
+						if (adjustX != -2)
+							adjustX = -1;
+					}
+				}
+				break;
+			case 8://右から２番目
+				foreach (int blockPos in movingBlocksPos) {
+					if (blockPos == 2) {
+						adjustX = -1;
+					}
+				}
+				break;
+			case 1://左から２番目
+				foreach (int blockPos in movingBlocksPos) {
+					if (blockPos == -2) {
+						adjustX = 1;
+					}
+				}
+				break;
+			case 0://一番左
+				foreach (int blockPos in movingBlocksPos) {
+					if (blockPos == -2) {
+						adjustX = 2;
+					}else if (blockPos == 9 || blockPos == -1 || blockPos == -11) {
+						if (adjustX != 2)
+							adjustX = 1;
+					}
+				}
+				break;
+			default:
+				break;
+			}
+
+			//外部(表示)ポジション調整
+			Vector3 pos = movingBlock.transform.position;
+			pos.x += (0.4f * adjustX);
+			movingBlock.transform.position = pos;
+			//内部ポジション調整
+			movingBlockPos += adjustX;
+
 			Debug.Log ("BLOCKS = "+movingBlocksPos[0]+"/"+movingBlocksPos[1]+"/"+movingBlocksPos[2]+"/"+movingBlocksPos[3]);
 		}else {
 			return false;
