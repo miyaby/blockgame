@@ -13,7 +13,7 @@ public class BlockController : MonoBehaviour {
 	static int height = 20;
 	//全マスにブロックが存在しているかどうか判定
 	static bool[] blockExistArray = Enumerable.Repeat<bool>(false, width*height).ToArray();
-//	new bool[width*height];
+	//	new bool[width*height];
 
 	//移動中ブロックの存在しているポイント
 	public static int movingBlockPos = 0;
@@ -41,7 +41,7 @@ public class BlockController : MonoBehaviour {
 	void Start () {
 		Debug.Log ("ConSTART");
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 
@@ -87,7 +87,7 @@ public class BlockController : MonoBehaviour {
 						exitsBlock = exitsBlock + ",";
 					}
 				}
-//				Debug.Log ("FIX.BLOCKS = "+movingBlocksPos[0]+"/"+movingBlocksPos[1]+"/"+movingBlocksPos[2]+"/"+movingBlocksPos[3]);
+				//				Debug.Log ("FIX.BLOCKS = "+movingBlocksPos[0]+"/"+movingBlocksPos[1]+"/"+movingBlocksPos[2]+"/"+movingBlocksPos[3]);
 				Debug.Log ("FIX.BLOCKS = " + exitsBlock);
 
 			} else {
@@ -161,6 +161,52 @@ public class BlockController : MonoBehaviour {
 		}
 
 		//回転の結果、ブロックが画面外に出てしまっていたら、位置を調整する
+		adjustXPosition();
+		adjustYPosition();
+
+		Debug.Log ("BLOCKS = "+movingBlocksPos[0]+"/"+movingBlocksPos[1]+"/"+movingBlocksPos[2]+"/"+movingBlocksPos[3]);
+	}
+
+	//回転時のブロック座標修正メソッド
+	int applySpin(int oriPos){
+
+		switch (oriPos) {
+		case 0:
+			return 0;
+		case 1:
+			return -10;
+		case 2:
+			return -20;
+		case 9:
+			return 11;
+		case 10:
+			return 1;
+		case 11:
+			return -9;
+		case 20:
+			return 2;
+		case -1:
+			return 10;
+		case -2:
+			return 20;
+		case -9:
+			return -11;
+		case -10:
+			return -1;
+		case -11:
+			return 9;
+		case -20:
+			return -2;
+		default:
+			return 0;
+		}
+	}
+
+	//現状動いているブロックが横方向に不正になっていたら位置の調整を行う
+	void adjustXPosition(){
+		
+		GameObject movingBlock = GameObject.Find ("MovingBlock");
+
 		//動いているブロックのX座標
 		int movingX = movingBlockPos % 10;
 		int adjustX = 0;//調整値
@@ -209,42 +255,43 @@ public class BlockController : MonoBehaviour {
 		movingBlock.transform.position = pos;
 		//内部ポジション調整
 		movingBlockPos += adjustX;
-
-		Debug.Log ("BLOCKS = "+movingBlocksPos[0]+"/"+movingBlocksPos[1]+"/"+movingBlocksPos[2]+"/"+movingBlocksPos[3]);
 	}
 
-	//回転時のブロック座標修正メソッド
-	int applySpin(int oriPos){
-		
-		switch (oriPos) {
-		case 0:
-			return 0;
-		case 1:
-			return -10;
-		case 2:
-			return -20;
-		case 9:
-			return 11;
-		case 10:
-			return 1;
-		case 11:
-			return -9;
-		case 20:
-			return 2;
-		case -1:
-			return 10;
-		case -2:
-			return 20;
-		case -9:
-			return -11;
-		case -10:
-			return -1;
-		case -11:
-			return 9;
-		case -20:
-			return -2;
-		default:
-			return 0;
+	//現状動いているブロックが縦方向に不正になっていたら位置の調整を行う
+	void adjustYPosition(){
+
+		//TODO:1点先が被ってて、2点先が被ってるときバグる
+
+		GameObject movingBlock = GameObject.Find ("MovingBlock");
+
+		int adjustX = 0;//調整値
+		int adjustY = 0;//調整値
+		foreach (int blockPos in movingBlocksPos) {
+
+			if (blockExistArray [movingBlockPos + blockPos]) {
+
+				//干渉した座標に22を足して、10で割った余りから2を引いた数が横の調整値
+				int x = (int)((blockPos + 22) % 10) - 2;
+				//絶対値が大きいものを採用
+				if (System.Math.Abs (adjustX) < System.Math.Abs (x))
+					adjustX = x;
+
+				//干渉した座標に22を足して、10で割った商から2を引いた数が縦の調整値
+				int y = (int)((blockPos + 22) / 10) - 2;
+				//絶対値が大きいものを採用
+				if (System.Math.Abs (adjustY) < System.Math.Abs (y))
+					adjustY = y;
+
+			}
 		}
+
+		//外部(表示)ポジション調整
+		Vector3 pos = movingBlock.transform.position;
+		pos.x -= (0.4f * adjustX);
+		pos.y -= (0.4f * adjustY*2);
+		movingBlock.transform.position = pos;
+		//内部ポジション調整
+		movingBlockPos -= adjustX;
+		movingBlockPos -= adjustY*10*2;
 	}
 }
