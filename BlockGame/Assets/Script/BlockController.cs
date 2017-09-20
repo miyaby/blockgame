@@ -90,6 +90,12 @@ public class BlockController : MonoBehaviour {
 				//				Debug.Log ("FIX.BLOCKS = "+movingBlocksPos[0]+"/"+movingBlocksPos[1]+"/"+movingBlocksPos[2]+"/"+movingBlocksPos[3]);
 				Debug.Log ("FIX.BLOCKS = " + exitsBlock);
 
+				string compLine = "";
+				foreach (int line in getCompLines()) {
+					compLine += line.ToString ();
+				}
+				Debug.Log("COMPLINE = " + compLine);
+
 			} else {
 				Vector3 pos = movingBlock.transform.position;
 				pos.y -= 0.4f;
@@ -299,5 +305,33 @@ public class BlockController : MonoBehaviour {
 		//内部ポジション調整
 		movingBlockPos -= adjustX;
 		movingBlockPos -= adjustY*10*2;
+	}
+
+	///コンプリートした列を取得する
+	List<int> getCompLines(){
+
+		int cell = 0;
+		bool compLine = true;
+		List<int> compLines = new List<int>();
+
+		for (int h = 0; h < height; h++) {
+			//コンプフラグリセット
+			compLine = true;
+			for (int w = 0; w < width; w++) {
+				//列チェック。特定のセルにブロックが存在する
+				if (blockExistArray [h * width + w]) {
+					
+				} else {//存在しない
+					//コンプフラグをオフ
+					compLine = false;
+					break;
+				}
+			}
+
+			if (compLine)
+				compLines.Add (h);		
+		}
+
+		return compLines;
 	}
 }
