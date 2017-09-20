@@ -109,9 +109,12 @@ public class BlockController : MonoBehaviour {
 		bool move = true;
 		GameObject movingBlock = GameObject.Find ("MovingBlock");
 		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
-			//一番左の列でない
 			foreach (int blockPos in movingBlocksPos) {
+				//一番左の列？
 				if ((movingBlockPos + blockPos) % 10 == 0)
+					move = false;
+				//特定のブロックの左隣にすでにブロックが存在している？
+				if (blockExistArray [movingBlockPos + blockPos - 1])
 					move = false;
 			}
 			if (move) {
@@ -123,9 +126,12 @@ public class BlockController : MonoBehaviour {
 				movingBlockPos -= 1;
 			}
 		} else if (Input.GetKeyDown (KeyCode.RightArrow)) {
-			//一番右の列でない
 			foreach (int blockPos in movingBlocksPos) {
+				//一番右の列？
 				if ((movingBlockPos + blockPos) % 10 == 9)
+					move = false;
+				//特定のブロックの右隣にすでにブロックが存在している？
+				if (blockExistArray [movingBlockPos + blockPos + 1])
 					move = false;
 			}
 			if (move) {
