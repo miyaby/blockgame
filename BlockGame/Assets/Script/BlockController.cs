@@ -106,6 +106,9 @@ public class BlockController : MonoBehaviour {
 
 				string compLine = "";
 				foreach (int line in getCompLines()) {
+
+					downBlocksCount (line);
+					downBlocksObject (line);
 					compLine += line.ToString ();
 				}
 				Debug.Log("COMPLINE = " + compLine);
@@ -350,7 +353,7 @@ public class BlockController : MonoBehaviour {
 	}
 
 	///指定列以上にあるブロックの存在判定を１段分下げる
-	void downBlocks(int line){
+	void downBlocksCount(int line){
 		
 		for (int h = line; h < height; h++) {
 			for (int x = 0; x < width; x++) {
@@ -359,6 +362,30 @@ public class BlockController : MonoBehaviour {
 					blockExistArray [x + h * width] = false;
 				} else {//最上位でない場合、存在判定は１行上
 					blockExistArray [x + h * width] = blockExistArray [x + (h + 1) * width];
+				}
+			}
+		}
+	}
+
+	///指定列以上にあるブロックのオブジェクトを１段分下げる
+	void downBlocksObject(int line){
+
+		for (int h = line; h < height; h++) {
+			for (int x = 0; x < width; x++) {
+
+				GameObject block = GameObject.Find ("StopBlock" + (x + h * width));
+
+				//指定された列のブロックは削除
+				if (h == line) {
+					Destroy (block);
+				} else {
+					//指定された列より上のブロックは一段分下げて名前も変更
+					if (block) {
+						Vector3 pos = block.transform.position;
+						pos.y -= 0.4f;
+						block.transform.position = pos;
+						block.name = "StopBlock" + (x + (h - 1) * width);
+					}
 				}
 			}
 		}
