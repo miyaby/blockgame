@@ -66,8 +66,22 @@ public class BlockController : MonoBehaviour {
 
 			//他のブロックにぶつかる・最下段に達したらストップ
 			if (conflictBlock) {
-				if (movingBlock)
+				if (movingBlock) {
 					movingBlock.name = "StopBlock";
+					int count = 0;
+					foreach (Transform child in movingBlock.transform)
+					{
+						//child is your child transform
+						int xCellDis = (int)(System.Math.Round((child.position.x - movingBlock.transform.position.x),1)/0.4);
+						int yCellDis = (int)(System.Math.Round((child.position.y - movingBlock.transform.position.y),1)/0.4);
+
+						int cell = movingBlockPos + xCellDis + (yCellDis * width);
+
+						child.name = "StopBlock" + cell;
+						Debug.Log ("Child[" + count + "] X:" + xCellDis + "Y:" + yCellDis);
+						count++;
+					}
+				}
 
 				Debug.Log ("FIX.BLOCKS = " + movingBlocksPos [0] + "/" + movingBlocksPos [1] + "/" + movingBlocksPos [2] + "/" + movingBlocksPos [3]);
 
