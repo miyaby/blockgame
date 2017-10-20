@@ -2,8 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.UI;
 
 public class BlockController : MonoBehaviour {
+
+	//ゲーム停止中
+	public enum statusType{
+		BEFORE_START,
+		PLAYING_GAME,
+		GAME_OVER
+	}
+	statusType status = statusType.BEFORE_START;
+
+	public int startCount = 5;
+	public Text countDownText;
 
 	public float timeOut = 1.0f;
 	private float timeElapsed;
@@ -12,7 +24,7 @@ public class BlockController : MonoBehaviour {
 	static int width = 10;
 	static int height = 20;
 	//全マスにブロックが存在しているかどうか判定
-	static bool[] blockExistArray = Enumerable.Repeat<bool>(false, width*height).ToArray();
+	bool[] blockExistArray = Enumerable.Repeat<bool>(false, width*height).ToArray();
 	//	new bool[width*height];
 
 	//移動中ブロックの存在しているポイント
@@ -37,14 +49,46 @@ public class BlockController : MonoBehaviour {
 		zBlocksPos
 	};
 
+	public Button topButton;
+
+	int point = 0;
+	public Text pointText;
+
 	// Use this for initialization
 	void Start () {
 		Debug.Log ("ConSTART");
+		countDownText.text = startCount.ToString ();
+
+		topButton.gameObject.SetActive (false);
+	}
+
+	// ゲームスタート時のカウントダウン処理
+	void countDown(){
+		startCount--;
+		countDownText.text = startCount.ToString ();
+//		Debug.Log ("COUNTDOWN:" + startCount.ToString ());
+		if (startCount == 0) {
+			status = statusType.PLAYING_GAME;
+			countDownText.text = "";
+		}
 	}
 
 	// Update is called once per frame
 	void Update () {
 
+		//カウントダウン処理
+		if (status == statusType.BEFORE_START) {
+			timeElapsed += Time.deltaTime;
+			if (timeElapsed >= 1.0) {
+				countDown ();
+				timeElapsed = 0.0f;
+			}
+			return;
+		}
+
+		if (status == statusType.GAME_OVER)
+			return;
+			
 		if (DownKeyCheck ())
 			return;
 
@@ -85,6 +129,17 @@ public class BlockController : MonoBehaviour {
 
 				Debug.Log ("FIX.BLOCKS = " + movingBlocksPos [0] + "/" + movingBlocksPos [1] + "/" + movingBlocksPos [2] + "/" + movingBlocksPos [3]);
 
+				//限界を超えていたらゲームオーバー
+				if (movingBlockPos > width * height |
+					movingBlockPos + movingBlocksPos [1] > width * height |
+					movingBlockPos + movingBlocksPos [2] > width * height |
+					movingBlockPos + movingBlocksPos [3] > width * height) {
+					status = statusType.GAME_OVER;
+					topButton.gameObject.SetActive (true);
+					Debug.Log ("Game Over!");
+					return;
+				}
+
 				//ブロックがある箇所のbool値をtrueに
 				blockExistArray [movingBlockPos] = true;
 				blockExistArray [movingBlockPos + movingBlocksPos [1]] = true;
@@ -105,11 +160,17 @@ public class BlockController : MonoBehaviour {
 				Debug.Log ("FIX.BLOCKS = " + exitsBlock);
 
 				string compLine = "";
+				int deleteCount = 0;
 				foreach (int line in getCompLines()) {
 
-					downBlocksCount (line);
-					downBlocksObject (line);
+					point++;
+					pointText.text = "Point:" + point.ToString ();
+
+					downBlocksCount (line - deleteCount);
+					downBlocksObject (line - deleteCount);
 					compLine += line.ToString ();
+
+					deleteCount++;
 				}
 				Debug.Log("COMPLINE = " + compLine);
 
